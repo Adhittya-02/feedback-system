@@ -1,0 +1,67 @@
+<div class="dashboard-container" *ngIf="company">
+
+  <div class="header">
+    <h2>{{ company.companyName }}</h2>
+    <div class="details">
+      <span>{{ company.genre || 'N/A' }}</span>
+      <span *ngIf="company.isHotel">🏨 Hotel</span>
+      <span *ngIf="company.isCompany">🏢 Company</span>
+    </div>
+    <button class="btn-customize" (click)="openCustomizePopup()">🛠 Customize Feedback Questions</button>
+  </div>
+
+  <!-- <hr /> -->
+<div class="responses">
+  <h3>Recent Feedback Responses</h3>
+
+  <div *ngIf="feedbackResponses && feedbackResponses.length > 0; else noFeedback">
+    <div *ngFor="let r of feedbackResponses" class="response-card">
+      <div class="response-header">
+        <strong>{{ r.user?.name || 'Anonymous' }}</strong>
+        <span class="email">{{ r.user?.email }}</span>
+        <span class="date">{{ r.createdDate | date: 'MMM dd, yyyy' }}</span>
+      </div>
+
+      <div class="answers">
+        <div *ngFor="let key of getAnswerKeys(r.answers)">
+          <p><strong>{{ key }}:</strong> {{ r.answers[key] }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- When no responses -->
+  <ng-template #noFeedback>
+    <div class="no-feedback">
+      <p>No feedbacks yet!</p>
+    </div>
+  </ng-template>
+</div>
+
+
+
+</div>
+<div class="popup-overlay" *ngIf="showCustomizePopup">
+  <div class="popup-content">
+    <h3>Customize Feedback Questions</h3>
+
+    <div *ngFor="let q of questions; let i = index" class="question-item">
+      <input [(ngModel)]="q.question" placeholder="Enter question text" />
+      <select [(ngModel)]="q.questionType">
+        <option value="text">Text</option>
+        <option value="rating">Rating</option>
+        <option value="yesno">Yes/No</option>
+      </select>
+      <button (click)="saveQuestion(q)">💾</button>
+    </div>
+
+    <div class="popup-button-row">
+      <button class="btn-add-q" (click)="addNewQuestion()">➕ Add New Question</button>
+      <button class="btn-close" (click)="closeCustomizePopup()">✖ Close</button>
+    </div>
+  </div>
+</div>
+<!-- Success Popup -->
+<div class="success-popup" *ngIf="showSuccessPopup">
+  ✅ Saved successfully!
+</div>

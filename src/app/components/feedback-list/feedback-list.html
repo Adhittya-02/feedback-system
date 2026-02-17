@@ -1,0 +1,93 @@
+<div class="feedback-container">
+
+  <div class="header">
+    <h2>Feedback Forms</h2>
+    <button class="btn-add" (click)="openAddCompanyForm()">➕ Add Company</button>
+  </div>
+
+  <!-- Feedback List -->
+  <ul class="feedback-list">
+    <li *ngFor="let f of feedbacks" class="feedback-item">
+      <div class="feedback-header">
+        <span class="company-link" (click)="openCompanyFeedback(f.id?.toString())">
+          {{ f.companyName }}
+        </span>
+        <span class="genre">({{ f.genre || 'N/A' }})</span>
+      </div>
+      <div class="feedback-details">
+        <span class="status" [class.active]="f.isActive" [class.inactive]="!f.isActive">
+          {{ f.isActive ? 'Active' : 'Inactive' }}
+        </span>
+        <span class="type">
+          {{ f.isHotel ? '🏨 Hotel' : f.isCompany ? '🏢 Company' : '' }}
+        </span>
+        <p class="description">{{ f.description || 'No description provided.' }}</p>
+        
+        <!-- <button *ngIf="f.id" (click)="goToFeedbackForm(f.id!)" class="btn btn-primary">
+          Give Feedback
+        </button> -->
+
+        <!-- <div class="qr-section">
+          <qrcode
+            [qrdata]="getFeedbackUrl(f)"
+            [width]="120"
+            [errorCorrectionLevel]="'M'">
+          </qrcode>
+          <p class="qr-label">Scan to Give Feedback</p>
+        </div> -->
+
+      </div>
+      
+      <div class="actions">
+        <button class="btn-delete" (click)="openDeleteModal(f)">🗑️ Delete</button>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Popup Overlay -->
+  <div *ngIf="showAddForm" class="overlay" (click)="cancelAdd()"></div>
+
+  <!-- Add Company Popup -->
+  <div *ngIf="showAddForm" class="popup-card">
+    <h3>Register New Company</h3>
+    <form (ngSubmit)="addCompany()">
+      <div class="form-group">
+        <label>Company Name</label>
+        <input type="text" [(ngModel)]="newFeedback.companyName" name="companyName" required />
+      </div>
+
+      <div class="form-group">
+        <label>Genre</label>
+        <input type="text" [(ngModel)]="newFeedback.genre" name="genre" />
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="newFeedback.description" name="description" rows="4"></textarea>
+      </div>
+
+      <div class="checkbox-group">
+        <label><input type="checkbox" [(ngModel)]="newFeedback.isHotel" name="isHotel" /> Is Hotel</label>
+        <label><input type="checkbox" [(ngModel)]="newFeedback.isCompany" name="isCompany" /> Is Company</label>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn-save">💾 Save</button>
+        <button type="button" class="btn-cancel" (click)="cancelAdd()">✖ Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteModal" class="modal-overlay">
+    <div class="modal-content confirm-box">
+      <h3>⚠️ Confirm Delete</h3>
+      <p>Are you sure you want to delete <strong>{{ selectedFeedback?.companyName }}</strong>?</p>
+      <div class="form-buttons">
+        <button class="btn-delete" (click)="confirmDelete()">Yes, Delete</button>
+        <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

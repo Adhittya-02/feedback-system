@@ -1,0 +1,75 @@
+<div class="feedback-form">
+  <h2>Feedback for <span>{{ companyName }}</span></h2>
+
+  <form (ngSubmit)="submitFeedback()">
+    <div class="user-info">
+      <input
+        [(ngModel)]="userName"
+        name="userName"
+        placeholder="Your Name"
+        required
+      />
+      <input
+        [(ngModel)]="userEmail"
+        name="userEmail"
+        placeholder="Your Email"
+        type="email"
+        required
+      />
+    </div>
+
+    <div *ngFor="let q of questions" class="question-card">
+      <label class="question-label">{{ q.question }}</label>
+
+      <div [ngSwitch]="q.questionType" class="question-input">
+        <input
+          *ngSwitchCase="'text'"
+          [(ngModel)]="responses[q.id]"
+          name="q{{ q.id }}"
+          placeholder="Type your answer..."
+        />
+
+        <select
+          *ngSwitchCase="'rating'"
+          [(ngModel)]="responses[q.id]"
+          name="q{{ q.id }}"
+        >
+          <option value="">Select rating</option>
+          <option *ngFor="let r of [1,2,3,4,5]" [value]="r">⭐ {{ r }}</option>
+        </select>
+
+        <div *ngSwitchCase="'yesno'" class="yesno-group">
+          <label class="yesno-option">
+            <input
+              type="radio"
+              [(ngModel)]="responses[q.id]"
+              name="q{{ q.id }}"
+              value="Yes"
+            />
+            <span>✅ Yes</span>
+          </label>
+          <label class="yesno-option">
+            <input
+              type="radio"
+              [(ngModel)]="responses[q.id]"
+              name="q{{ q.id }}"
+              value="No"
+            />
+            <span>❌ No</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">✨ Submit Feedback</button>
+  </form>
+</div>
+
+<!-- ✅ Success Popup -->
+<div class="modal" *ngIf="showPopup">
+  <div class="modal-content">
+    <h3>🎉 Feedback Submitted!</h3>
+    <p>Thank you for sharing your thoughts 💬</p>
+    <button class="close-btn" (click)="closePopup()">Close</button>
+  </div>
+</div>
