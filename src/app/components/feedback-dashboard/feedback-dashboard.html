@@ -1,67 +1,105 @@
 <div class="dashboard-container" *ngIf="company">
 
-  <div class="header">
-    <h2>{{ company.companyName }}</h2>
-    <div class="details">
-      <span>{{ company.genre || 'N/A' }}</span>
-      <span *ngIf="company.isHotel">🏨 Hotel</span>
-      <span *ngIf="company.isCompany">🏢 Company</span>
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="company-title">
+        <h2>{{ company.companyName }}</h2>
+        <span class="badge type" style="background: var(--brand-light); color: var(--brand-primary); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+          {{ company.isHotel ? '🏨 Hotel' : company.isCompany ? '🏢 Company' : '🏢 Entity' }}
+        </span>
+      </div>
+      <div class="details-row">
+        <span class="badge" style="background: var(--bg-main); border: 1px solid var(--border-color); font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: 4px;">{{ company.genre || 'General' }}</span>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0; max-width: 600px;">{{ company.description }}</p>
+      </div>
     </div>
-    <button class="btn-customize" (click)="openCustomizePopup()">🛠 Customize Feedback Questions</button>
+    
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openCustomizePopup()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        Customize Questions
+      </button>
+    </div>
   </div>
 
-  <!-- <hr /> -->
-<div class="responses">
-  <h3>Recent Feedback Responses</h3>
+  <div class="responses-section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+      <h3>Recent Feedback Responses</h3>
+      <span style="background: var(--brand-light); color: var(--brand-primary); padding: 0.2rem 0.8rem; border-radius: var(--radius-full); font-weight: 600; font-size: 0.9rem;">
+        Total: {{ feedbackResponses.length || 0 }}
+      </span>
+    </div>
 
-  <div *ngIf="feedbackResponses && feedbackResponses.length > 0; else noFeedback">
-    <div *ngFor="let r of feedbackResponses" class="response-card">
-      <div class="response-header">
-        <strong>{{ r.user?.name || 'Anonymous' }}</strong>
-        <span class="email">{{ r.user?.email }}</span>
-        <span class="date">{{ r.createdDate | date: 'MMM dd, yyyy' }}</span>
-      </div>
+    <div *ngIf="feedbackResponses && feedbackResponses.length > 0; else noFeedback" class="responses-grid">
+      <div *ngFor="let r of feedbackResponses" class="response-card">
+        <div class="response-header">
+          <div class="response-user">
+            <strong>{{ r.user?.name || 'Anonymous User' }}</strong>
+            <span class="email" *ngIf="r.user?.email">{{ r.user.email }}</span>
+          </div>
+          <span class="response-date">{{ r.createdDate | date: 'MMM dd, yyyy' }}</span>
+        </div>
 
-      <div class="answers">
-        <div *ngFor="let key of getAnswerKeys(r.answers)">
-          <p><strong>{{ key }}:</strong> {{ r.answers[key] }}</p>
+        <div class="answers">
+          <div *ngFor="let key of getAnswerKeys(r.answers)" class="answer-item">
+            <span class="answer-question">{{ key }}</span>
+            <p class="answer-text">{{ r.answers[key] }}</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- When no responses -->
+    <ng-template #noFeedback>
+      <div class="no-feedback">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: var(--spacing-sm); opacity: 0.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <h4>No feedbacks yet!</h4>
+        <p>Share your QR code to start collecting responses.</p>
+      </div>
+    </ng-template>
   </div>
 
-  <!-- When no responses -->
-  <ng-template #noFeedback>
-    <div class="no-feedback">
-      <p>No feedbacks yet!</p>
-    </div>
-  </ng-template>
 </div>
 
-
-
-</div>
-<div class="popup-overlay" *ngIf="showCustomizePopup">
-  <div class="popup-content">
-    <h3>Customize Feedback Questions</h3>
-
-    <div *ngFor="let q of questions; let i = index" class="question-item">
-      <input [(ngModel)]="q.question" placeholder="Enter question text" />
-      <select [(ngModel)]="q.questionType">
-        <option value="text">Text</option>
-        <option value="rating">Rating</option>
-        <option value="yesno">Yes/No</option>
-      </select>
-      <button (click)="saveQuestion(q)">💾</button>
+<!-- Customize Questions Modal -->
+<div class="modal-overlay" *ngIf="showCustomizePopup" (click)="closeCustomizePopup()">
+  <div class="modal-content" (click)="$event.stopPropagation()" style="max-width: 600px;">
+    <div class="modal-header" style="margin-bottom: var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--border-color);">
+      <h3 style="margin: 0; font-size: 1.5rem;">Customize Form Questions</h3>
+      <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">Configure the questions users will see in the feedback form.</p>
     </div>
 
-    <div class="popup-button-row">
-      <button class="btn-add-q" (click)="addNewQuestion()">➕ Add New Question</button>
-      <button class="btn-close" (click)="closeCustomizePopup()">✖ Close</button>
+    <div style="max-height: 50vh; overflow-y: auto; padding-right: var(--spacing-sm);">
+      <div *ngFor="let q of questions; let i = index" class="question-item">
+        <span style="color: var(--text-muted); font-weight: 600; width: 24px;">{{i + 1}}.</span>
+        <div class="form-group" style="flex: 2; margin-bottom: 0;">
+          <input type="text" [(ngModel)]="q.question" placeholder="Enter question..." />
+        </div>
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+          <select [(ngModel)]="q.questionType">
+            <option value="text">Text Response</option>
+            <option value="rating">Rating (1-5)</option>
+            <option value="yesno">Yes / No</option>
+          </select>
+        </div>
+        <button (click)="saveQuestion(q)" title="Save Question" style="color: var(--brand-primary);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-buttons" style="border-top: 1px solid var(--border-color); padding-top: var(--spacing-md); margin-top: var(--spacing-md);">
+      <button class="btn-secondary" style="margin-right: auto; display: flex; align-items: center; gap: 6px; color: var(--brand-primary); border-color: var(--brand-light); background: var(--brand-light);" (click)="addNewQuestion()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add Question
+      </button>
+      <button class="btn-primary" (click)="closeCustomizePopup()">Done</button>
     </div>
   </div>
 </div>
-<!-- Success Popup -->
-<div class="success-popup" *ngIf="showSuccessPopup">
-  ✅ Saved successfully!
+
+<!-- Success Toast -->
+<div class="success-toast" *ngIf="showSuccessPopup">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+  <strong>Success!</strong> Question saved.
 </div>

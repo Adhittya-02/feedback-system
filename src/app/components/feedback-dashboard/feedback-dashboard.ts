@@ -23,7 +23,7 @@ export class FeedbackDashboard {
     private route: ActivatedRoute,
     private feedbackService: FeedbackService,
     private http: HttpClient
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.companyId = Number(this.route.snapshot.paramMap.get('companyId'));
@@ -77,7 +77,7 @@ export class FeedbackDashboard {
   }
 
   loadQuestions(): void {
-    debugger
+    //debugger
     this.feedbackService.getQuestions(this.companyId).subscribe({
       next: (data: any) => this.questions = data as any[],
       error: (err) => console.error('Error loading questions', err)
@@ -95,7 +95,7 @@ export class FeedbackDashboard {
   }
 
   saveQuestion(q: any): void {
-    debugger
+    // debugger
     if (q.id) {
       this.feedbackService.updateQuestion(q.id, q).subscribe({
         next: () => {

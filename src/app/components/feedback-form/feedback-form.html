@@ -1,75 +1,121 @@
-<div class="feedback-form">
-  <h2>Feedback for <span>{{ companyName }}</span></h2>
-
-  <form (ngSubmit)="submitFeedback()">
-    <div class="user-info">
-      <input
-        [(ngModel)]="userName"
-        name="userName"
-        placeholder="Your Name"
-        required
-      />
-      <input
-        [(ngModel)]="userEmail"
-        name="userEmail"
-        placeholder="Your Email"
-        type="email"
-        required
-      />
+<div class="feedback-page">
+  <div class="feedback-card">
+    
+    <div class="brand-header">
+      <h2>Provide Feedback</h2>
+      <p>Your thoughts help <span>{{ companyName }}</span> improve!</p>
     </div>
 
-    <div *ngFor="let q of questions" class="question-card">
-      <label class="question-label">{{ q.question }}</label>
-
-      <div [ngSwitch]="q.questionType" class="question-input">
-        <input
-          *ngSwitchCase="'text'"
-          [(ngModel)]="responses[q.id]"
-          name="q{{ q.id }}"
-          placeholder="Type your answer..."
-        />
-
-        <select
-          *ngSwitchCase="'rating'"
-          [(ngModel)]="responses[q.id]"
-          name="q{{ q.id }}"
-        >
-          <option value="">Select rating</option>
-          <option *ngFor="let r of [1,2,3,4,5]" [value]="r">⭐ {{ r }}</option>
-        </select>
-
-        <div *ngSwitchCase="'yesno'" class="yesno-group">
-          <label class="yesno-option">
-            <input
-              type="radio"
-              [(ngModel)]="responses[q.id]"
-              name="q{{ q.id }}"
-              value="Yes"
-            />
-            <span>✅ Yes</span>
-          </label>
-          <label class="yesno-option">
-            <input
-              type="radio"
-              [(ngModel)]="responses[q.id]"
-              name="q{{ q.id }}"
-              value="No"
-            />
-            <span>❌ No</span>
-          </label>
+    <form (ngSubmit)="submitFeedback()" #feedbackForm="ngForm">
+      
+      <!-- User Info -->
+      <div class="user-info-section">
+        <div class="input-floating">
+          <input
+            id="userName"
+            [(ngModel)]="userName"
+            name="userName"
+            placeholder=" "
+            required
+          />
+          <label for="userName">Your Name</label>
+        </div>
+        
+        <div class="input-floating">
+          <input
+            id="userEmail"
+            [(ngModel)]="userEmail"
+            name="userEmail"
+            type="email"
+            placeholder=" "
+            required
+          />
+          <label for="userEmail">Your Email</label>
         </div>
       </div>
-    </div>
 
-    <button type="submit" class="btn-submit">✨ Submit Feedback</button>
-  </form>
+      <!-- Questions Loop -->
+      <div *ngFor="let q of questions; let i = index" class="question-card">
+        <label class="question-label">{{i + 1}}. {{ q.question }}</label>
+
+        <div [ngSwitch]="q.questionType" class="question-input">
+          
+          <!-- Text Input -->
+          <div *ngSwitchCase="'text'" class="input-floating">
+            <input
+              [(ngModel)]="responses[q.id]"
+              name="q{{ q.id }}"
+              placeholder=" "
+              required
+            />
+            <label>Type your answer...</label>
+          </div>
+
+          <!-- Rating Stars -->
+          <div *ngSwitchCase="'rating'" class="rating-group">
+            <button
+              type="button"
+              class="star-btn"
+              *ngFor="let r of [1,2,3,4,5]"
+              (click)="responses[q.id] = r"
+              [class.active]="responses[q.id] >= r"
+            >
+              ★
+            </button>
+          </div>
+
+          <!-- Yes / No Pills -->
+          <div *ngSwitchCase="'yesno'" class="yesno-group">
+            <label class="yesno-option">
+              <input
+                type="radio"
+                [(ngModel)]="responses[q.id]"
+                name="q{{ q.id }}"
+                value="Yes"
+                required
+              />
+              <div class="yesno-pill yes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Yes
+              </div>
+            </label>
+            <label class="yesno-option">
+              <input
+                type="radio"
+                [(ngModel)]="responses[q.id]"
+                name="q{{ q.id }}"
+                value="No"
+                required
+              />
+              <div class="yesno-pill no">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                No
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-area">
+        <button type="submit" class="btn-primary btn-submit" [disabled]="!feedbackForm.valid">
+          Submit Feedback
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>
 
-<!-- ✅ Success Popup -->
-<div class="modal" *ngIf="showPopup">
-  <div class="modal-content">
-    <h3>🎉 Feedback Submitted!</h3>
-    <p>Thank you for sharing your thoughts 💬</p>
-    <button class="close-btn" (click)="closePopup()">Close</button>
+<!-- Success Modal Overlay -->
+<div class="modal-overlay" *ngIf="showPopup">
+  <div class="modal-content success-modal">
+    <div class="success-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <h3>Feedback Submitted!</h3>
+    <p>Thank you for taking the time to share your perspective with us.</p>
+    <button class="btn-primary" (click)="closePopup()">Return to Home</button>
   </div>
 </div>

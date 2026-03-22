@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { FeedbackService } from '../../services/feedback';
 import { FeedbackDto } from '../../models/feedback.model';
 import { Router } from '@angular/router';
-// import { QRCodeComponent } from 'angularx-qrcode';
+import { QRCodeComponent } from 'angularx-qrcode';
 @Component({
   selector: 'app-feedback-list',
   standalone: true,   // ✅ Required for standalone component
-  imports: [CommonModule, FormsModule],//,QRCodeComponent
+  imports: [CommonModule, FormsModule, QRCodeComponent],
   templateUrl: './feedback-list.html',
   styleUrl: './feedback-list.css',
 })
@@ -127,6 +127,9 @@ confirmDelete() {
   }
 
   getFeedbackUrl(r: any): string {
-  return `${window.location.origin}/feedback/${r.id}/form`;;
-}
+    if (typeof window !== 'undefined') {
+      return `${window.location.origin}/feedback/${r.id}/form`;
+    }
+    return `/feedback/${r.id}/form`;
+  }
 }
